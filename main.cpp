@@ -29,8 +29,8 @@ void prepareData(NeuralNetwork* net){
 	cout << "Preparing training data..." << endl;
 	
 	// get in data
-	ifstream fin("mnist_train.csv");
-	
+	ifstream fin("/home/kate/Neural Nets/Network/data/mnist_train.csv");
+
 	if(!fin.is_open())
 		throw runtime_error("Could not open file");
 	

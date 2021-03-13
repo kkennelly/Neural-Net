@@ -1,1 +1,0 @@
-/usr/bin/c++  -g   CMakeFiles/Main.dir/Network.cpp.o CMakeFiles/Main.dir/HiddenLayer.cpp.o CMakeFiles/Main.dir/InputLayer.cpp.o CMakeFiles/Main.dir/Layer.cpp.o CMakeFiles/Main.dir/NeuralNetwork.cpp.o CMakeFiles/Main.dir/OutputLayer.cpp.o  -o Main 
