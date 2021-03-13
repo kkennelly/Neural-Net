@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/run.dir/main.cpp.o CMakeFiles/run.dir/HiddenLayer.cpp.o CMakeFiles/run.dir/InputLayer.cpp.o CMakeFiles/run.dir/Layer.cpp.o CMakeFiles/run.dir/NeuralNetwork.cpp.o CMakeFiles/run.dir/OutputLayer.cpp.o  -o run 
