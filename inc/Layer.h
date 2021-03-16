@@ -14,8 +14,12 @@ public:
 
 	}
 
+	~Layer(){
+
+	}
+
 	vector<double> process(vector<double> incoming_values) {
-		vector<double> temp = dotProduct(incoming_values);
+		vector<double> temp = dotProduct(incoming_values, transpose(weights));
 		prevOutput = sigmoid(temp);
 		return prevOutput;
 	}
@@ -28,8 +32,8 @@ protected:
 
 	virtual vector<double> sigmoid(vector<double> values) = 0;
 	virtual void generateInitialWeights(int numLayerNodes, int numPrevLayerNodes) = 0;
+	virtual int getId() = 0;
 
-	vector<double> dotProduct(vector<double> values);
 	vector<double> dotProduct(vector<double> values, vector< vector<double> > matrix);
 	vector< vector<double> > transpose();
 	vector <vector<double> > transpose(vector< vector<double> > matrix);

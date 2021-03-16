@@ -1,4 +1,5 @@
 #include "../inc/HiddenLayer.h"
+#include  <random>
 
 // implement activation function on all values
 vector<double> HiddenLayer::sigmoid(vector<double> values) {
@@ -15,16 +16,14 @@ vector<double> HiddenLayer::sigmoid(vector<double> values) {
 void HiddenLayer::generateInitialWeights(int numOfLayerNodes, int numOfPrevLayerNodes) {
 	vector< vector<double> > matrix;
 
-	random_device rd;
-	mt19937 gen(rd());
-	uniform_real_distribution<> dis(0.0, 1.0);
-
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.00000000001,1.0);
 
 	for (int i = 0; i < numOfPrevLayerNodes; i++) {
 		vector<double> temp;
 
 		for (int j = 0; j < numOfLayerNodes; j++) {
-			temp.push_back(dis(gen));
+			temp.push_back(distribution(generator));
 		}
 
 		matrix.push_back(temp);

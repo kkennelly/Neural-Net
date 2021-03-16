@@ -50,6 +50,7 @@ void NeuralNetwork::trainingProcess() {
 	
 	for(int i = 0; i < trainingInputs.size(); i++) 
 	{
+	    cout << "Training picture " << i << endl;
 		train(trainingInputs.at(i), expectedResults.at(i));
 	}
 }
@@ -67,19 +68,15 @@ void NeuralNetwork::train(vector<double> input, vector<double> target) {
 	for (int i = 0; i < target.size(); i++) {
 		errors.push_back(target.at(i) - actual.at(i));
 	}
-	
-	// find average of the errors
-	int average;
-	for (int i = 0; i < errors.size(); i++) {
-		average  = average + errors.at(i);
-	}
-	average = average / 10;
-	cout << "Average error for nodes: " << average << endl;
+
+    vector<double> error_total;
+    for(int i = 0; i < errors.size(); i++){
+        error_total.push_back(0.5 * pow(errors.at(i), 2));
+    }
 
 	// back propogate errors - we do not need to call for input layer
-	cout << "Backpropogating errors..." << endl;
+//	cout << "Backpropogating errors..." << endl;
 	for (int i = layers.size() - 1 ; i > 0; i--) {
-		cout << "Working on layer " << i << endl;
 		errors = layers.at(i)->backPropogate(errors, layers.at(i - 1)->prevOutput, learningRate);
 	}
 }
@@ -90,7 +87,7 @@ vector<double> NeuralNetwork::query(vector<double> inputs) {
 
 	// run through all layers
 	vector<double> temp = layers.at(0)->process(inputs);
-	for (int i = 1; i != layers.size(); i++) {
+	for (int i = 1; i < layers.size(); i++) {
 		temp = layers.at(i)->process(temp);
 	}
 

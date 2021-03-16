@@ -13,11 +13,14 @@ public:
 protected:
 	vector<double> sigmoid(vector<double> values);
 	void generateInitialWeights(int numLayerNodes, int numPrevLayerNodes);
+
+	int getId(){
+	    return 1;
+	}
 	
 	// overridden. This function will just return values because weights are all 1
 	// we can save some time.
 	vector<double> dotProduct(vector<double> values);
-
 };
 
 #endif

@@ -18,16 +18,14 @@ void OutputLayer::generateInitialWeights(int numLayerNodes, int numPrevLayerNode
 
 	vector< vector<double> > matrix;
 
-	random_device rd;
-	mt19937 gen(rd());
-	uniform_real_distribution<> dis(0.0, 1.0);
-
+    std::default_random_engine generator;
+    std::uniform_real_distribution<double> distribution(0.00000000001,1.0);
 
 	for (int i = 0; i < numPrevLayerNodes; i++) {
 		vector<double> temp;
 
 		for (int j = 0; j < numLayerNodes; j++) {
-			temp.push_back(dis(gen));
+			temp.push_back(distribution(generator));
 		}
 
 		matrix.push_back(temp);

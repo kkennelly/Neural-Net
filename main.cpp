@@ -6,8 +6,11 @@
 
 using namespace std;
 
-void prepareData(NeuralNetwork* net);
+void prepareData(string fileName);
 vector<double> constructTargetMatrix(int num, int max);
+
+vector< vector<double> > inputs;
+vector <vector <double> > answerInfo;
 
 int main() {
 
@@ -17,25 +20,35 @@ int main() {
 	net->setLearning(0.3);
 
 	// train 
-	prepareData(net);
+	prepareData("/home/kate/Neural Nets/Network/data/mnist_train.csv");
+    net->setTrainingData(answerInfo, inputs);
 	net->trainingProcess();
 
 	// query
+	vector<double> output;
+	prepareData("/home/kate/Neural Nets/Network/data/mnist_test.csv");
+	for(int i = 0; i < 2; i++){
+	    output = net->query(inputs.at(i));
+	}
+
+	for(int i = 0; i < output.size(); i++){
+	    cout << output.at(i) << endl;
+	}
 
 }
 
-void prepareData(NeuralNetwork* net){
+void prepareData(string fileName){
 
 	cout << "Preparing training data..." << endl;
 	
 	// get in data
-	ifstream fin("/home/kate/Neural Nets/Network/data/mnist_train.csv");
+	ifstream fin(fileName);
 
 	if(!fin.is_open())
 		throw runtime_error("Could not open file");
 	
 	string line, temp, word;
-	vector< vector<double> > inputs;
+	inputs.clear();
 	vector<double> answers;
 		
 	while (fin.good() && fin.peek() != EOF) {
@@ -73,13 +86,13 @@ void prepareData(NeuralNetwork* net){
 	}
 	
 	// get vertices that will be our expected response
-	vector <vector <double> > answerInfo;
+	answerInfo.clear();
 	for(int i = 0; i < answers.size(); i++){
 		answerInfo.push_back(constructTargetMatrix((int)answers.at(i), 10));
 	}
 	
 	// set the vectors in the network class
-	net->setTrainingData(answerInfo, inputs);
+//	net->setTrainingData(answerInfo, inputs);
 	
 	
 }

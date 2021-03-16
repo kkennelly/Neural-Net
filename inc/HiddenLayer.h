@@ -13,7 +13,10 @@ public:
 protected:
 	vector<double> sigmoid(vector<double> values);
 	void generateInitialWeights(int numLayerNodes, int numPrevLayerNodes);
-	
+
+    int getId(){
+        return 2;
+    }
 
 };
 
