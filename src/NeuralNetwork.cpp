@@ -13,7 +13,7 @@ NeuralNetwork::NeuralNetwork(int numOfLayers, int nodesOfInput, int nodesOfHidde
 
 	// push back all (layers - 2) amount of hidden layers
 	for (int i = 0; i < numLayers - 2; i++) {
-		if (i = 0)
+		if (i == 0)
 			layers.push_back(new HiddenLayer(nodesOfHidden, nodesOfInput));
 		else
 			layers.push_back(new HiddenLayer(nodesOfHidden, nodesOfHidden));
@@ -42,6 +42,16 @@ void NeuralNetwork::setLearning(double learning) {
 double NeuralNetwork::getLearning() {
 	return learningRate;
 }
+/* **************************************************************** */
+
+void NeuralNetwork::setSigmoidGain(double input) {
+    sigmoidGain = input;
+}
+
+double NeuralNetwork::getSigmoidGain() {
+    return sigmoidGain;
+}
+
 /* **************************************************************** */
 
 void NeuralNetwork::trainingProcess() {
@@ -86,9 +96,9 @@ void NeuralNetwork::train(vector<double> input, vector<double> target) {
 vector<double> NeuralNetwork::query(vector<double> inputs) {
 
 	// run through all layers
-	vector<double> temp = layers.at(0)->process(inputs);
+	vector<double> temp = layers.at(0)->process(inputs, sigmoidGain);
 	for (int i = 1; i < layers.size(); i++) {
-		temp = layers.at(i)->process(temp);
+		temp = layers.at(i)->process(temp, sigmoidGain);
 	}
 
 	// return output layer output

@@ -11,7 +11,7 @@ public:
 	}
 
 protected:
-	vector<double> sigmoid(vector<double> values);
+	vector<double> sigmoid(vector<double> values, double gain);
 	void generateInitialWeights(int numLayerNodes, int numPrevLayerNodes);
 
 	int getId(){

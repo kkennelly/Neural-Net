@@ -7,6 +7,8 @@
 #include "../src/HiddenLayer.cpp"
 #include "../inc/Layer.h"
 #include "../src/Layer.cpp"
+#include "../inc/NeuralNetwork.h"
+#include "../src/NeuralNetwork.cpp"
 
 #define EXPECT_IN_RANGE(VAL, MIN, MAX) \
     EXPECT_GE((VAL), (MIN));           \
@@ -42,7 +44,7 @@ TEST(LayerConstruction, OutputLayerTest) {
 
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < 5; j++) {
-			EXPECT_IN_RANGE(test->weights.at(0).at(0), 0, 1);
+			EXPECT_IN_RANGE(test->weights.at(0).at(0), -0.5, 0.5);
 		}
 	}
 
@@ -57,7 +59,7 @@ TEST(LayerConstruction, HiddenLayerTest) {
 
 	for (int i = 0; i < 5; i++) {
 		for (int j = 0; j < 5; j++) {
-			EXPECT_IN_RANGE(test->weights.at(0).at(0), 0, 1);
+			EXPECT_IN_RANGE(test->weights.at(0).at(0), -0.5, 0.5);
 		}
 	}
 
@@ -68,7 +70,7 @@ TEST(SigmoidFunction, InputLayerTest) {
 	Layer* test = new InputLayer(3, 3);
 
 	vector<double> testVector{ 0.020142, 0.000125, 0.982312 };
-	vector<double> result = test->sigmoid(testVector);
+	vector<double> result = test->sigmoid(testVector, 1);
 
 	for (int i = 0; i < 3; i++) {
 		EXPECT_EQ(testVector.at(i), result.at(i));
@@ -81,7 +83,7 @@ TEST(SigmoidFunction, OutputLayerTest) {
 	Layer* test = new OutputLayer(3,3);
 
 	vector<double> testVector{ 0.020142, 0.000125, 0.982312 };
-	vector<double> result = test->sigmoid(testVector);
+	vector<double> result = test->sigmoid(testVector, 1);
 
 	EXPECT_NEAR(0.50503532, result.at(0), 0.00001);
 	EXPECT_NEAR(0.50003124, result.at(1), 0.00001);
@@ -94,7 +96,7 @@ TEST(SigmoidFunction, HiddenLayerTest) {
 	Layer* test = new HiddenLayer(3,3);
 
 	vector<double> testVector{ 0.020142, 0.000125, 0.982312 };
-	vector<double> result = test->sigmoid(testVector);
+	vector<double> result = test->sigmoid(testVector, 1);
 
 	EXPECT_NEAR(0.50503532, result.at(0), 0.00001);
 	EXPECT_NEAR(0.50003124, result.at(1), 0.00001);
@@ -129,7 +131,7 @@ TEST(DotProductFunction, HiddenAndOutputLayerTest) {
 	test->weights = testWeights;
 
 	vector<double> testVector{ 0.020142, 0.000125, 0.982312 };
-	vector<double> result = test->dotProduct(testVector);
+	vector<double> result = test->dotProduct(testVector, test->weights);
 
 	EXPECT_NEAR(0.1619891, result.at(0), 0.000001);
 	EXPECT_NEAR(0.8818596, result.at(1), 0.000001);
@@ -167,70 +169,52 @@ TEST(TransposeFunction, AllLayersTest) {
 	delete test;
 }
 
-TEST(BackPropagateFunction, PerfectSquare) {
-	OutputLayer* test = new OutputLayer(2,2);
+TEST(BackPropagateFunction, Test1) {
+	NeuralNetwork *net = new NeuralNetwork(3, 3, 2, 2);
 
-	vector<vector<double>> testWeights;
-	vector<double> row1{0.40, 0.50};
-	vector<double> row2{0.45, 0.55};
-    testWeights.push_back(row1);
-    testWeights.push_back(row2);
-    test->weights = testWeights;
+	vector<double> firstrow1 {0.1, 0.2};
+	vector<double> firstrow2 {0.3, 0.4};
+	vector<double> firstrow3 {0.5, 0.6};
+	vector< vector <double> > firstWeights;
+	firstWeights.push_back(firstrow1);
+	firstWeights.push_back(firstrow2);
+	firstWeights.push_back(firstrow3);
+	net->layers[1]->weights = firstWeights;
 
-    vector <double> expectedOut{0.01, 0.99};
-    vector <double> actualOut{0.75136507, 0.772928465};
-    test->prevOutput = actualOut;
-    vector <double> error;
-    for(int i = 0; i < expectedOut.size(); i++){
-        error.push_back(- (expectedOut.at(i) - actualOut.at(i)));
-    }
-    vector <double> prevLayerOut{0.593269, 0.598688};
+	vector<double> secrow1{0.7, 0.8};
+	vector<double> secrow2{0.9, 0.1};
+    vector< vector <double> > secondWeights;
+    secondWeights.push_back(secrow1);
+    secondWeights.push_back(secrow2);
+    net-> layers[2]->weights = secondWeights;
 
-    vector<double> result = test->backPropogate(error, prevLayerOut, 0.5);
-    vector<vector<double>> newWeights = test->weights;
+    net->setSigmoidGain(1.0);
+    net->setLearning(0.1);
 
+    vector<double> input {1, 4, 5};
 
-    EXPECT_NEAR(0.35891, newWeights.at(0).at(0), 0.001);
-    EXPECT_NEAR(0.51130, newWeights.at(0).at(1), 0.001);
+    net->query(input);
 
-    EXPECT_NEAR(0.40866, newWeights.at(1).at(0), 0.001);
-    EXPECT_NEAR(0.56137, newWeights.at(1).at(1), 0.001);
+    vector <double> hiddenOutput = net->layers[1]->prevOutput;
 
-    EXPECT_NEAR(0.03635, result.at(0), 0.001);
-    EXPECT_NEAR(0.03645, result.at(1), 0.001);
-}
+    EXPECT_NEAR(0.978118, hiddenOutput.at(0), 0.01);
+    EXPECT_NEAR(0.991837, hiddenOutput.at(1), 0.01);
 
-TEST(BackPropagateFunction, Rectangle) {
-    OutputLayer* test = new OutputLayer(2,3);
+    vector <double> outputOutput = net->layers[2]->prevOutput;
 
-    vector<vector<double>> testWeights;
-    vector<double> row1{ 2.0, 1.0 };
-    vector<double> row2{ 3.0, 4.0 };
-    vector<double> row3{ 2.0, 2.0 };
-    testWeights.push_back(row1);
-    testWeights.push_back(row2);
-    testWeights.push_back(row3);
-    test->weights = testWeights;
+    EXPECT_NEAR(0.828826, outputOutput.at(0), 0.0001);
+    EXPECT_NEAR(0.707169, outputOutput.at(1), 0.0001);
 
-    vector<double> error        { 0.8, 0.5 };
-    vector<double> prevLayerOut { 0.4, 0.5, 0.2};
-    double learningRate = 0.1;
+    vector<double> target {0.1, 0.05};
 
-    vector<double> result = test->backPropogate(error, prevLayerOut, learningRate);
-    vector<vector<double>> newWeights = test->weights;
+    vector<double> outputOneError {target.at(0) - outputOutput.at(0), target.at(1) - outputOutput.at(1)};
+    vector<double> hiddenError = net->layers[2]->backPropogate(outputOneError, hiddenOutput, net->getLearning());
 
- //   EXPECT_NEAR(, newWeights.at(0).at(0), 0.000001);
- //   EXPECT_NEAR(, newWeights.at(0).at(1), 0.000001);
+    EXPECT_NEAR(0.7 - 0.1 * 0.101138, net->layers[2]->weights.at(0).at(0), 0.01);
+    EXPECT_NEAR(0.8 - 0.1 * 0.133109, net->layers[2]->weights.at(0).at(1), 0.01);
+    EXPECT_NEAR(0.9 - 0.1 * 0.102557, net->layers[2]->weights.at(1).at(0), 0.01);
+    EXPECT_NEAR(0.1 - 0.1 * 0.134976, net->layers[2]->weights.at(1).at(1), 0.01);
 
- //   EXPECT_NEAR(, newWeights.at(1).at(0), 0.000001);
- //   EXPECT_NEAR(, newWeights.at(1).at(1), 0.000001);
-
- //   EXPECT_NEAR(, newWeights.at(2).at(0), 0.000001);
- //   EXPECT_NEAR(, newWeights.at(2).at(1), 0.000001);
-
-    EXPECT_NEAR(0.300028, result.at(0), 0.000001);
-    EXPECT_NEAR(0.628571, result.at(1), 0.000001);
-    EXPECT_NEAR(0.371428, result.at(2), 0.000001);
 }
 
 

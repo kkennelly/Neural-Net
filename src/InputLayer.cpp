@@ -3,7 +3,7 @@
 
 // we don't want this layer to execute the activation function,
 // so we will just return the input values
-vector<double> InputLayer::sigmoid(vector<double> values) {
+vector<double> InputLayer::sigmoid(vector<double> values, double gain) {
 
 	return values;
 }

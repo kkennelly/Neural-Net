@@ -17,17 +17,18 @@ int main() {
 	cout << "Creating neural network." << endl;
 	// initialize -  set number of nodes and layers
 	NeuralNetwork* net = new NeuralNetwork(3, 784, 100, 10);
-	net->setLearning(0.3);
+	net->setLearning(0.03);
 
 	// train 
 	prepareData("/home/kate/Neural Nets/Network/data/mnist_train.csv");
+//    prepareData("/home/kate/Neural Nets/Network/data/test.csv");
     net->setTrainingData(answerInfo, inputs);
 	net->trainingProcess();
 
 	// query
 	vector<double> output;
 	prepareData("/home/kate/Neural Nets/Network/data/mnist_test.csv");
-	for(int i = 0; i < 2; i++){
+	for(int i = 0; i < answerInfo.size(); i++){
 	    output = net->query(inputs.at(i));
 	}
 
@@ -70,13 +71,6 @@ void prepareData(string fileName){
 	}
 	
 	fin.close();
-	
-	
-	// check to make sure we are getting info right
-	for (int i = 0; i < 20; i++) {
-		cout << answers.at(i) << " ";
-	}
-	cout << endl;
 	
 	// change inputs from 0-225 to 0.1-1.0
 	for (int i = 0; i < inputs.size(); i++){

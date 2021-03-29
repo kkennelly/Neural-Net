@@ -4,6 +4,7 @@
 #define _NEURALNETWORK_H_
 
 #define DEFAULT_LEARNING	0.3
+#define DEFAULT_GAIN        1.0
 
 #include <random>
 #include <vector>
@@ -24,6 +25,9 @@ public:
 	void setLearning(double learning);
 	double getLearning();
 
+	void setSigmoidGain(double input);
+	double getSigmoidGain();
+
 	void trainingProcess();
 
 	vector<double> query(vector<double> inputs);
@@ -33,15 +37,17 @@ public:
 		trainingInputs = inputs;	
 	}
 
+	// TODO: Move back to private variable
+    vector <Layer*> layers;
+    vector< vector<double> > expectedResults;
+    vector< vector<double> > trainingInputs;
 
 private:
 	int numLayers;
-	int nodesPerLayer;
 	double learningRate = DEFAULT_LEARNING;
+	double sigmoidGain = DEFAULT_GAIN;
 
-	vector <Layer*> layers;
-	vector< vector<double> > expectedResults;
-	vector< vector<double> > trainingInputs;
+
 
 	vector< vector<double> > initializeWeights(int height, int width);
 	void train(vector<double> input, vector<double> target);

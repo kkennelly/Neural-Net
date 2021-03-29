@@ -18,11 +18,17 @@ public:
 
 	}
 
-	vector<double> process(vector<double> incoming_values) {
+	vector<double> process(vector<double> incoming_values, double gain) {
 		vector<double> temp = dotProduct(incoming_values, transpose(weights));
-		prevOutput = sigmoid(temp);
+
+		double sum = 0;
+		for(int i = 0; i < temp.size(); i++)
+		    sum += temp.at(i);
+
+		prevOutput = sigmoid(temp, gain);
 		return prevOutput;
 	}
+
 	vector<double> backPropogate(vector<double> error, vector<double> prevLayerOutputs, double learningRate);
 	vector<double> prevOutput;
 
@@ -30,7 +36,7 @@ public:
 protected:
 	vector< vector<double> > weights;
 
-	virtual vector<double> sigmoid(vector<double> values) = 0;
+	virtual vector<double> sigmoid(vector<double> values, double gain) = 0;
 	virtual void generateInitialWeights(int numLayerNodes, int numPrevLayerNodes) = 0;
 	virtual int getId() = 0;
 
